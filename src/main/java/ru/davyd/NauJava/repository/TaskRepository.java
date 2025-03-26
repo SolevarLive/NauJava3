@@ -1,48 +1,47 @@
 package ru.davyd.NauJava.repository;
 
-import ru.davyd.NauJava.entity.Task;
 
-import java.util.List;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import ru.davyd.NauJava.entities.Task;
+import ru.davyd.NauJava.entities.TaskPriority;
+
+
 import java.util.UUID;
+import java.util.List;
+import java.util.Date;
 
 /**
- * Интерфейс репозитория для работы с данными задач
- * определяет базовые операции CRUD для задач
+ * Интерфейс репозитория для задач
  */
-public interface TaskRepository {
-    /**
-     * Сохранение новой задачи в хранилище
-     *
-     * @param task сохраняемая задача
-     */
-    void save(Task task);
+public interface TaskRepository extends CrudRepository<Task, UUID> {
 
     /**
-     * Получение всех задач из хранилища
+     * Находит задачи по заголовку и приоритету
      *
-     * @return список всех задач
+     * @param title   заголовок задачи для поиска
+     * @param priority приоритет задачи для поиска
+     * @return список задач, соответствующих критериям
      */
-    List<Task> findAll();
+    List<Task> findByTitleContainingIgnoreCaseAndPriority(String title, TaskPriority priority);
 
     /**
-     * Поиск задачи по её идентификатору
+     * Находит задачи по имени пользователя
      *
-     * @param id идентификатор искомой задачи
-     * @return найденная задача
+     * @param username имя пользователя для поиска
+     * @return список задач, принадлежащих пользователю
      */
-    Task findById(UUID id);
+    @Query("SELECT t FROM Task t JOIN t.user u WHERE u.username = :username")
+    List<Task> findTasksByUsername(String username);
 
     /**
-     * Обновление существующей задачи в хранилище
+     * Находит задачи по заголовку и приоритету или в указанном диапазоне дат
      *
-     * @param task обновляемая задача
+     * @param title       заголовок задачи для поиска
+     * @param priority    приоритет задачи для поиска
+     * @param startDate   начало диапазона дат
+     * @param endDate     конец диапазона дат
+     * @return список задач, соответствующих критериям
      */
-    void update(Task task);
-
-    /**
-     * Удаление задачи из хранилища по её идентификатору
-     *
-     * @param id идентификатор удаляемой задачи
-     */
-    void delete(UUID id);
+    List<Task> findByTitleContainingIgnoreCaseAndPriorityOrDueDateBetween(String title, TaskPriority priority, Date startDate, Date endDate);
 }

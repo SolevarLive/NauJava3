@@ -1,6 +1,10 @@
-package ru.davyd.NauJava.entity;
+package ru.davyd.NauJava.entities;
 
-import java.time.LocalDate;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
+
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -8,37 +12,75 @@ import java.util.UUID;
  * содержит информацию о задаче, включая уникальный идентификатор,
  * заголовок, описание, статус и срок выполнения
  */
+@Entity
+@Table(name = "tasks")
 public class Task {
+    /**
+     * Уникальный идентификатор задачи
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    /**
+     * Заголовок задачи
+     */
+    @Size(max = 40)
+    @Column(length = 40)
     private String title;
+
+    /**
+     * Описание задачи
+     */
     private String description;
+
+    /**
+     * Срок выполнения задачи
+     */
+    private Date dueDate;
+
+    /**
+     * Статус задачи
+     */
+    @Enumerated(EnumType.STRING)
     private TaskStatus status;
-    private LocalDate dueDate;
 
     /**
-     * Конструктор, создающий новую задачу с автоматически
-     * генерируемым уникальным идентификатором
+     * Приоритет задачи
      */
-    public Task() {
-        this.id = UUID.randomUUID();
-    }
+    @Enumerated(EnumType.STRING)
+    private TaskPriority priority;
 
     /**
-     * Конструктор для создания новой задачи без указания ID
-     * генерирует автоматически уникальный идентификатор
-     *
-     * @param title       заголовок задачи
-     * @param description описание задачи
-     * @param status      начальный статус задачи
-     * @param dueDate     срок выполнения задачи
+     * Пользователь, которому принадлежит задача
      */
-    public Task(String title, String description, TaskStatus status, LocalDate dueDate) {
-        this.id = UUID.randomUUID();
-        this.title = title;
-        this.description = description;
-        this.status = status;
-        this.dueDate = dueDate;
-    }
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    /**
+     * Список комментариев к задаче
+     */
+    @OneToMany(mappedBy = "task")
+    private List<Comment> comments;
+
+    /**
+     * Список тегов, примененных к задаче
+     */
+    @ManyToMany
+    @JoinTable(
+            name = "task_tags",
+            joinColumns = @JoinColumn(name = "task_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private List<Tag> tags;
+
+    /**
+     * Проект, к которому относится задача
+     */
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     /**
      * Получение уникального идентификатора задачи
@@ -117,7 +159,7 @@ public class Task {
      *
      * @return дата и время завершения задачи
      */
-    public LocalDate getDueDate() {
+    public Date getDueDate() {
         return dueDate;
     }
 
@@ -126,7 +168,7 @@ public class Task {
      *
      * @param dueDate новая дата завершения задачи
      */
-    public void setDueDate(LocalDate dueDate) {
+    public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
     }
 
@@ -139,5 +181,45 @@ public class Task {
                 "status=" + status + "\n" +
                 "dueDate=" + dueDate + "\n" +
                 '}';
+    }
+
+    public TaskPriority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(TaskPriority priority) {
+        this.priority = priority;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 }
