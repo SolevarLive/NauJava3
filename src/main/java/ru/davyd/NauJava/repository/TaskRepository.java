@@ -3,6 +3,7 @@ package ru.davyd.NauJava.repository;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import ru.davyd.NauJava.entities.Task;
 import ru.davyd.NauJava.entities.TaskPriority;
 
@@ -14,6 +15,7 @@ import java.util.Date;
 /**
  * Интерфейс репозитория для задач
  */
+@RepositoryRestResource(path = "tasks", collectionResourceRel = "tasks")
 public interface TaskRepository extends CrudRepository<Task, UUID> {
 
     /**
