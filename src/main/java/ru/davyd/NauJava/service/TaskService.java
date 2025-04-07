@@ -1,75 +1,91 @@
 package ru.davyd.NauJava.service;
 
-import ru.davyd.NauJava.entity.Task;
-import ru.davyd.NauJava.entity.TaskStatus;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+import ru.davyd.NauJava.entities.Comment;
+import ru.davyd.NauJava.entities.Task;
+import ru.davyd.NauJava.entities.TaskStatus;
+import ru.davyd.NauJava.repository.CommentRepository;
+import ru.davyd.NauJava.repository.TaskRepository;
+
+import jakarta.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
- * Интерфейс для работы со службой управления задачами
- * предоставляет методы для создания, чтения, обновления и удаления задач,
- * а также методы для фильтрации задач по статусу и срокам
+ * Сервис для работы с задачами
  */
-public interface TaskService {
-    /**
-     * Создание новой задачи в системе
-     *
-     * @param title       заголовок задачи
-     * @param description описание задачи
-     * @param status      начальный статус задачи
-     * @param dueDate     срок выполнения задачи
-     * @return созданная задача с присвоенным ID
-     */
-    Task createTask(String title, String description, TaskStatus status, LocalDate dueDate);
+@Service
+@Validated
+public class TaskService {
+
+    private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
 
     /**
-     * Получение списка всех задач в системе
-     *
-     * @return список всех существующих задач
+     * Репозиторий для задач
      */
-    List<Task> getAllTasks();
+    @Autowired
+    private TaskRepository taskRepository;
 
     /**
-     * Поиск задачи по её уникальному идентификатору
-     *
-     * @param id идентификатор искомой задачи
-     * @return найденная задача или null если задача не существует
+     * Репозиторий для комментариев
      */
-    Task getTask(UUID id);
+    @Autowired
+    private CommentRepository commentRepository;
 
     /**
-     * Обновление существующей задачи в системе
+     * Создает новую задачу с комментарием
      *
-     * @param id          идентификатор обновляемой задачи
-     * @param title       новое название задачи
-     * @param description новое описание задачи
-     * @param status      новый статус задачи
-     * @param dueDate     новый срок выполнения
-     * @return обновленная задача или null если задача не найдена
+     * @param task   задача для создания
+     * @param comment комментарий для создания
      */
-    Task updateTask(UUID id, String title, String description, TaskStatus status, LocalDate dueDate);
+    @Transactional
+    public void createTaskWithComment(@Valid Task task, Comment comment) {
+        try {
+            taskRepository.save(task);
+            comment.setTask(task);
+            commentRepository.save(comment);
+        } catch (ConstraintViolationException e) {
+            logger.error("Ошибка валидации при создании задачи: " + e.getMessage(), e);
+            throw e;
+        }
+    }
 
     /**
-     * Удаление задачи из системы по её идентификатору
+     * Получает список задач по статусу
      *
-     * @param id идентификатор удаляемой задачи
+     * @param status статус задач для поиска
+     * @return список задач с указанным статусом
      */
-    void deleteTask(UUID id);
+    public List<Task> getTasksByStatus(TaskStatus status) {
+        return ((List<Task>) taskRepository.findAll()).stream()
+                .filter(task -> task.getStatus().equals(status))
+                .collect(Collectors.toList());
+    }
 
     /**
-     * Получение списка задач с указанным статусом
+     * Получает список просроченных задач
      *
-     * @param status фильтруемый статус
-     * @return список задач с соответствующим статусом
+     * @return список задач, срок выполнения которых истек
      */
-    List<Task> getTasksByStatus(TaskStatus status);
-
-    /**
-     * Получение списка просроченных задач
-     *
-     * @return список задач, срок выполнения которых истёк
-     */
-    List<Task> getOverdueTasks();
+    public List<Task> getOverdueTasks() {
+        LocalDate today = LocalDate.now();
+        return ((List<Task>) taskRepository.findAll()).stream()
+                .filter(task -> {
+                    if (task.getDueDate() != null) {
+                        LocalDate dueDate = task.getDueDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                        return dueDate.isBefore(today);
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
+    }
 }
