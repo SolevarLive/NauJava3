@@ -22,5 +22,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleConstraintViolationException(ConstraintViolationException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ошибка валидации: " + e.getMessage());
     }
+
+    /**
+     * Обработчик всех исключений (Exception).
+     * Возвращает ответ с HTTP статусом INTERNAL_SERVER_ERROR и сообщением о непредвиденной ошибке.
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleGeneralException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Непредвиденная ошибка: " + e.getMessage());
+    }
 }
 

@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ru.davyd.NauJava.criteria.TaskCriteriaRepository;
 import ru.davyd.NauJava.entities.Task;
 import ru.davyd.NauJava.entities.TaskPriority;
+import ru.davyd.NauJava.service.TaskService;
 
 import java.util.List;
 
@@ -23,20 +23,20 @@ import java.util.List;
 public class TaskController {
 
     /**
-     * Репозиторий для критериев задач
-     * Используется для выполнения кастомных запросов к базе данных
+     * Сервис для работы с задачами
+     * Используется для выполнения бизнес-логики
      */
-    private final TaskCriteriaRepository taskCriteriaRepository;
+    private final TaskService taskService;
 
     /**
      * Конструктор контроллера
-     * Внедряет зависимость репозитория через конструктор
+     * Внедряет зависимость сервиса через конструктор
      *
-     * @param taskCriteriaRepository Репозиторий для критериев задач
+     * @param taskService Сервис для задач
      */
     @Autowired
-    public TaskController(TaskCriteriaRepository taskCriteriaRepository) {
-        this.taskCriteriaRepository = taskCriteriaRepository;
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
     }
 
     /**
@@ -49,8 +49,7 @@ public class TaskController {
      */
     @GetMapping("/by-title-and-priority/{title}/{priority}")
     public ResponseEntity<List<Task>> findByTitleAndPriority(@PathVariable String title, @PathVariable String priority) {
-        TaskPriority taskPriority = TaskPriority.valueOf(priority);
-        List<Task> tasks = taskCriteriaRepository.findByTitleAndPriorityCriteria(title, taskPriority);
+        List<Task> tasks = taskService.findTasksByTitleAndPriority(title, priority);
         return ResponseEntity.ok(tasks);
     }
 
@@ -63,8 +62,7 @@ public class TaskController {
      */
     @GetMapping("/by-username/{username}")
     public ResponseEntity<List<Task>> findTasksByUsername(@PathVariable String username) {
-        List<Task> tasks = taskCriteriaRepository.findTasksByUsernameCriteria(username);
+        List<Task> tasks = taskService.findTasksByUsername(username);
         return ResponseEntity.ok(tasks);
     }
 }
-
