@@ -2,11 +2,12 @@ package ru.davyd.NauJava.service;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import ru.davyd.NauJava.criteria.TaskCriteriaRepository;
 import ru.davyd.NauJava.entities.Comment;
 import ru.davyd.NauJava.entities.Task;
+import ru.davyd.NauJava.entities.TaskPriority;
 import ru.davyd.NauJava.entities.TaskStatus;
 import ru.davyd.NauJava.repository.CommentRepository;
 import ru.davyd.NauJava.repository.TaskRepository;
@@ -30,16 +31,36 @@ public class TaskService {
     private static final Logger logger = LoggerFactory.getLogger(TaskService.class);
 
     /**
-     * Репозиторий для задач
+     * Репозиторий для критериев задач
+     * Используется для выполнения кастомных запросов к базе данных
      */
-    @Autowired
-    private TaskRepository taskRepository;
+    private final TaskCriteriaRepository taskCriteriaRepository;
+
+    /**
+     * Репозиторий для задач
+     * Используется для базовых операций CRUD с задачами
+     */
+    private final TaskRepository taskRepository;
 
     /**
      * Репозиторий для комментариев
+     * Используется для базовых операций CRUD с комментариями
      */
-    @Autowired
-    private CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
+
+    /**
+     * Конструктор сервиса
+     * Внедряет зависимости через конструктор
+     *
+     * @param taskCriteriaRepository Репозиторий для критериев задач
+     * @param taskRepository         Репозиторий для задач
+     * @param commentRepository      Репозиторий для комментариев
+     */
+    public TaskService(TaskCriteriaRepository taskCriteriaRepository, TaskRepository taskRepository, CommentRepository commentRepository) {
+        this.taskCriteriaRepository = taskCriteriaRepository;
+        this.taskRepository = taskRepository;
+        this.commentRepository = commentRepository;
+    }
 
     /**
      * Создает новую задачу с комментарием
@@ -87,5 +108,27 @@ public class TaskService {
                     return false;
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Находит задачи по названию и приоритету
+     *
+     * @param title   Название задачи для поиска
+     * @param priority Приоритет задачи для поиска
+     * @return Список задач, соответствующих критериям
+     */
+    public List<Task> findTasksByTitleAndPriority(String title, String priority) {
+        TaskPriority taskPriority = TaskPriority.valueOf(priority);
+        return taskCriteriaRepository.findByTitleAndPriorityCriteria(title, taskPriority);
+    }
+
+    /**
+     * Находит задачи по имени пользователя
+     *
+     * @param username Имя пользователя для поиска задач
+     * @return Список задач, принадлежащих пользователю
+     */
+    public List<Task> findTasksByUsername(String username) {
+        return taskCriteriaRepository.findTasksByUsernameCriteria(username);
     }
 }
