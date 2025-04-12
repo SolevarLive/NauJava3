@@ -31,6 +31,22 @@ public class User {
      */
     private String password;
 
+
+    /**
+     * Флаг, указывающий, является ли пользователь администратором
+     * По умолчанию устанавливается в false, если не указано иное
+     */
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean isAdmin;
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
     public String getUsername() {
         return username;
     }
