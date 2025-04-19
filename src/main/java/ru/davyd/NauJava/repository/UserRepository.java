@@ -12,5 +12,13 @@ import java.util.Optional;
  */
 @RepositoryRestResource(path = "users", collectionResourceRel = "users")
 public interface UserRepository extends CrudRepository<User, UUID> {
+    /**
+     * Поиск пользователя по Имени
+     */
     Optional<User> findByUsername(String username);
+
+    /**
+     * Поиск пользователя по email
+     */
+    Optional<User> findByEmail(String email);
 }
