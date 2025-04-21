@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.davyd.NauJava.criteria.TaskCriteriaRepository;
 import ru.davyd.NauJava.entities.Task;
-import ru.davyd.NauJava.entities.TaskPriority;
+import ru.davyd.NauJava.entities.enums.TaskPriority;
 import ru.davyd.NauJava.entities.User;
 import ru.davyd.NauJava.repository.TaskRepository;
 import ru.davyd.NauJava.repository.UserRepository;

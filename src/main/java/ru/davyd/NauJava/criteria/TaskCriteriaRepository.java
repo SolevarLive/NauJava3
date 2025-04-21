@@ -2,7 +2,7 @@ package ru.davyd.NauJava.criteria;
 
 
 import ru.davyd.NauJava.entities.Task;
-import ru.davyd.NauJava.entities.TaskPriority;
+import ru.davyd.NauJava.entities.enums.TaskPriority;
 
 import java.util.List;
 /**

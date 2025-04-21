@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import ru.davyd.NauJava.entities.Task;
-import ru.davyd.NauJava.entities.TaskPriority;
+import ru.davyd.NauJava.entities.enums.TaskPriority;
 
 
 import java.util.UUID;

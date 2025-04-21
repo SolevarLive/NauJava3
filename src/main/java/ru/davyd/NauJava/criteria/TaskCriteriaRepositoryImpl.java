@@ -6,7 +6,7 @@ import jakarta.persistence.criteria.*;
 import org.springframework.stereotype.Repository;
 import ru.davyd.NauJava.entities.Task;
 import ru.davyd.NauJava.entities.User;
-import ru.davyd.NauJava.entities.TaskPriority;
+import ru.davyd.NauJava.entities.enums.TaskPriority;
 
 import java.util.List;
 

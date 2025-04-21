@@ -2,6 +2,8 @@ package ru.davyd.NauJava.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
+import ru.davyd.NauJava.entities.enums.TaskPriority;
+import ru.davyd.NauJava.entities.enums.TaskStatus;
 
 import java.util.Date;
 import java.util.List;
