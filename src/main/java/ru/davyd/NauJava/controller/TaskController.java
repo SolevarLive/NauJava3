@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import ru.davyd.NauJava.entities.Task;
-import ru.davyd.NauJava.entities.TaskPriority;
 import ru.davyd.NauJava.service.TaskService;
 
 import java.util.List;

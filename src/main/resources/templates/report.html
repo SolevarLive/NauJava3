@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Отчёт по приложению NauJava</title>
+    <meta charset="UTF-8" />
+</head>
+<body>
+<h1>Отчёт по приложению NauJava</h1>
+
+<h2>1. Количество зарегистрированных пользователей</h2>
+<p th:text="${userCount}">0</p>
+
+<h2>2. Список задач</h2>
+<table border="1" cellpadding="5" cellspacing="0">
+    <tr>
+        <th>Заголовок</th>
+        <th>Статус</th>
+        <th>Приоритет</th>
+        <th>Срок</th>
+    </tr>
+    <tr th:each="task : ${tasks}">
+        <td th:text="${task.title}">Title</td>
+        <td th:text="${task.status}">Status</td>
+        <td th:text="${task.priority}">Priority</td>
+        <td th:text="${#dates.format(task.dueDate, 'yyyy-MM-dd')}">DueDate</td>
+    </tr>
+</table>
+
+<h2>3. Время выполнения</h2>
+<ul>
+    <li>Время подсчёта пользователей: <span th:text="${userCountTime}">0</span> мс</li>
+    <li>Время получения списка задач: <span th:text="${tasksTime}">0</span> мс</li>
+    <li>Общее время формирования отчёта: <span th:text="${totalTime}">0</span> мс</li>
+</ul>
+
+</body>
+</html>

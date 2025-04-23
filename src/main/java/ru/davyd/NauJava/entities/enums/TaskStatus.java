@@ -1,4 +1,4 @@
-package ru.davyd.NauJava.entities;
+package ru.davyd.NauJava.entities.enums;
 
 /**
  * Перечисление возможных статусов задачи

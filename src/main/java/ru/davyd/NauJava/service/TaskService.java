@@ -7,8 +7,8 @@ import org.springframework.validation.annotation.Validated;
 import ru.davyd.NauJava.criteria.TaskCriteriaRepository;
 import ru.davyd.NauJava.entities.Comment;
 import ru.davyd.NauJava.entities.Task;
-import ru.davyd.NauJava.entities.TaskPriority;
-import ru.davyd.NauJava.entities.TaskStatus;
+import ru.davyd.NauJava.entities.enums.TaskPriority;
+import ru.davyd.NauJava.entities.enums.TaskStatus;
 import ru.davyd.NauJava.repository.CommentRepository;
 import ru.davyd.NauJava.repository.TaskRepository;
 
